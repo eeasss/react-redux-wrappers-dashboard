@@ -88,10 +88,10 @@ export const groupLabels = (data) => {
     ];
 }
 
-const distribution = (data) => {
+export const distribution = (data) => {
     return data.map(item => ({
       created_at: new Date(item.created_at).setHours(0, 0, 0, 0),
-      label: this.cleanupLabels(item.labels)
+      label: cleanupLabels(item.labels)
     }))
       .reduce((agg, curr) => {
         agg[curr.label].push({
