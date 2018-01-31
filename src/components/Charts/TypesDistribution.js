@@ -5,73 +5,36 @@ class TypesDistribution extends Component {
     constructor(props) {
         super(props);
         this.addSeries = this.addSeries.bind(this);
+        let seriesColors = [
+            { label: "SEV: Low", value: "#FF9966", active: true },
+            { label: "SEV: Medium", value: "#BB6ACB", active: false },
+            { label: "SEV: High", value: "#52C3D3", active: false },
+            { label: "Enhancement", value: "#22C85D", active: true },
+            { label: "Feature", value: "#FF6358", active: false },
+            { label: "Others", value: "#2BA7DA", active: true }
+        ];
+        let mapSeries = ((series) => {
+            return {
+                color: series.value,
+                markers: { visible: false },
+                data: this.props.data[series.label]
+            };
+        }).bind(this);
 
         this.state = {
             initialGrey: '#A2ACAC',
-            visibleSeries: [],
-            seriesColors: [
-                { label: "SEV: Low", value: "#FF9966", active: false },
-                { label: "SEV: Medium", value: "#BB6ACB", active: false },
-                { label: "SEV: High", value: "#52C3D3", active: false },
-                { label: "Enhancement", value: "#22C85D", active: false },
-                { label: "Feature", value: "#FF6358", active: false },
-                { label: "Others", value: "#2BA7DA", active: false }
-            ]
+            visibleSeries: seriesColors.filter(s => s.active).map(mapSeries),
+            seriesColors: seriesColors,
+            mapSeries: mapSeries
         };
-
-        this.addSeries({ label: "SEV: Low", value: '#FF9966', active: false }, true);
-        this.addSeries({ label: 'Enhancement', value: '#22C85D', active: false }, true);
-        this.addSeries({ label: 'Others', value: '#2BA7DA', active: false }, true);
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        console.log(nextState);
-        return true;
-    }
-
-    toggleSeriesColors() {
-        let newSeries = this.state.seriesColors.slice(0).map(series => series.active = !series.active);
-
-        this.setState({
-            seriesColors: newSeries
-        });
-    }
-
-    addSeries(button, toggle)
+    addSeries(button)
     {
-        if (toggle) {
-            this.toggleSeriesColors();
-        }
+        let seriesColors = this.state.seriesColors.map(b => { if (button.value === b.value) { b.active = !b.active } return b;});
+        let visibleSeries = seriesColors.filter(s => s.active).map(this.state.mapSeries)
 
-        if (this.state.seriesColors.find(color => color.label === button.label) === undefined) {
-debugger;
-        }
-
-        const newSeries = {
-            color: this.state.seriesColors.find(color => color.label === button.label).value,
-            markers: { visible: false },
-            data: this.props.data[button.label]
-        };
-
-        if (this.state.visibleSeries.some(series => series.color === newSeries.color))
-        {
-            const removeIndex = this.state.visibleSeries.map(item => item.color).indexOf(newSeries.color);
-            if (removeIndex) {
-                this.setState(prevState => {
-                    return {
-                        visibleSeries: this.state.visibleSeries.slice(0, removeIndex).concat(this.state.visibleSeries.slice(removeIndex + 1))
-                    }
-                });
-            }
-        } else {
-            this.setState(prevState => {
-                let newSeries = [...prevState.visibleSeries, newSeries];
-                return {
-                    visibleSeries: newSeries,
-                    series: ([].concat(newSeries))
-                };
-            });
-        }
+        this.setState({seriesColors, visibleSeries});
     }
 
     render() {
@@ -92,17 +55,18 @@ debugger;
         return (
             <div className="card">
                 <h4 className="card-header">Types Distribution</h4>
-                <div className="row card-block small">
+                <div className="row card-block pb-0 small">
                     {
-                        this.state.seriesColors.forEach(button => {
+                        this.state.seriesColors.map(button =>
                             <a
-                                onClick={this.addSeries(button, true)}
+                                onClick={() => { this.addSeries(button) }}
+                                key={button.label}
                                 style={{color: button.active ? button.value : this.state.initialGrey}}
-                                className="col-xs-4 col-sm-3 col-md comp-label">
+                                className="col-6 col-lg-4 col-xl-2 pb-3 comp-label">
                                 <strong>{this.props.data[button.label].length}</strong>
                                 <small>{button.label}</small>
                             </a>
-                        })
+                        )
 
                     }
                 </div>

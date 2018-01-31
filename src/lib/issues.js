@@ -89,7 +89,7 @@ export const groupLabels = (data) => {
 }
 
 export const distribution = (data) => {
-    return data.map(item => ({
+    let foo = data.map(item => ({
       created_at: new Date(item.created_at).setHours(0, 0, 0, 0),
       label: cleanupLabels(item.labels)
     }))
@@ -100,6 +100,7 @@ export const distribution = (data) => {
         });
         return agg;
       }, { Others: [], Enhancement: [], 'SEV: Low': [], 'SEV: Medium': [], 'SEV: High': [], 'Feature': [] });
+      return foo;
 }
 
 const cleanupLabels = (labels) => {

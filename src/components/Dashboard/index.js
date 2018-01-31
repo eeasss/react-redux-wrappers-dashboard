@@ -7,7 +7,7 @@ class Dashboard extends Component {
 
     render() {
         return (
-            <div>
+            <div className="dashboard" id="dashboard">
                 <HeaderContainer />
                 <ChartsContaner />
             </div>
