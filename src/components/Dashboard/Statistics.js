@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ActiveIssues from './../Charts/ActivesIssues';
+import ActiveIssuesDash from './../Charts/ActiveIssues';
 import IssuesTypes from './../Charts/IssuesTypes';
 import TypesDistribution from './../Charts/TypesDistribution';
 
@@ -8,12 +8,8 @@ const Statistics = (props) => {
     return (
         <div className="row">
         <div className="col-md-12">
-            <ActiveIssues
-                data={props.groupedIssues}
-                months={props.months}
-                issues={props.issues}
-                closeRate={props.closeRate}
-                active={props.active}
+            <ActiveIssuesDash
+               {...props}
             />
         </div>
         <div className="col-md-4">

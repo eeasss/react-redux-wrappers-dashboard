@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
 import Statistics from './Statistics';
-import { mapIssue, groupLabels, distribution } from './../../lib/issues';
+import { mapIssue, groupLabels, distribution, groupIssues, closeRate } from './../../lib/issues';
 
 import { connect } from 'react-redux';
 
 const mapStateToProps = (state) => {
-    let mappedIssues = state.issues.map(mapIssue);
+    const mappedIssues = state.issues.map(mapIssue);
+    const { open, closed } = groupIssues(mappedIssues);
+
     return {
-        groupedIssues:  state.groupedIssues,
+        open: open,
+        closed: closed,
         months: state.issuesPeriod,
-        issues: mappedIssues,
         issuesTypes: groupLabels(mappedIssues),
         typesDistribution: distribution(mappedIssues),
-        closeRate: 5,
-        active: mappedIssues
+        active: mappedIssues,
+        closeRate: closeRate({open: open, closed: closed})
     };
 }
 

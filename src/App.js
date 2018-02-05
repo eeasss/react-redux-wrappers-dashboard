@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { issuesFetched, issuesReceived, issuesDetails, groupIssues } from './actions/index';
+import { issuesFetched, issuesReceived, issuesDetails } from './actions/index';
 import MainMenu from './components/MainMenu';
 
 /* import logo from './logo.svg'; */
@@ -15,7 +15,6 @@ class App extends Component {
     let dispatcher = (data) => {
         dispatch(issuesReceived(data));
         dispatch(issuesDetails(data));
-        dispatch(groupIssues(data));
     };
 
     dispatch(issuesFetched());

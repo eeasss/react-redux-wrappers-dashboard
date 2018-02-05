@@ -69,6 +69,13 @@ const aggregate = (data, field) => {
     }, {});
   }
 
+export const groupIssues= (data)=> {
+    return data.reduce((acc, curr) => {
+      acc[curr.state].push(curr);
+      return acc;
+    }, { open: [], closed: [] });
+}
+
 export const groupLabels = (data) => {
     const labels = aggregate(flatten(data.map(item => item.labels)), 'name');
     const low = (labels['SEV: Low'] / data.length);
@@ -93,15 +100,41 @@ export const distribution = (data) => {
       created_at: new Date(item.created_at).setHours(0, 0, 0, 0),
       label: cleanupLabels(item.labels)
     }))
-      .reduce((agg, curr) => {
-        agg[curr.label].push({
+      .reduce((acc, curr) => {
+        acc[curr.label].push({
           date: new Date(curr.created_at),
           value: 1
         });
-        return agg;
+        return acc;
       }, { Others: [], Enhancement: [], 'SEV: Low': [], 'SEV: Medium': [], 'SEV: High': [], 'Feature': [] });
       return foo;
 }
+
+
+export const closeRate = (data) => {
+    const closed = aggregate(data.closed.map(item => ({
+      created_at: new Date(item.created_at).setHours(0, 0, 0, 0)
+    })), 'created_at');
+
+    const open = aggregate(data.open.map(item => ({
+      created_at: new Date(item.created_at).setHours(0, 0, 0, 0)
+    })), 'created_at');
+
+    const rate = Object.keys(closed).map(key => {
+      const closedKey = closed[key] || 0;
+      const openKey = open[key] || 0;
+      const closeRate = closedKey / (closedKey + openKey);
+      return {
+        created_at: key,
+        close_rate: closeRate
+      };
+    });
+    return {
+      lowest: rate.reduce((acc, curr) => acc.close_rate < curr.close_rate ? acc : curr, []),
+      highest: rate.reduce((acc, curr) => acc.close_rate > curr.close_rate ? acc : curr, []),
+      average: data.closed.length / (data.open.length + data.closed.length) || 0
+    };
+  }
 
 const cleanupLabels = (labels) => {
     let filtered = labels.filter(label =>
